@@ -6,6 +6,8 @@ const userRouter = require('./userRoute')
 const movieRouter = require('./movieRoute')
 const scheduleRouter = require('./scheduleRoute')
 const appRouter = require('./appRoute')
+const theaterRouter = require('./theaterRoute')
+
 
 
 
@@ -13,6 +15,7 @@ router.use('/admin', adminRouter)
 router.use('/user', userRouter)
 router.use('/movie', movieRouter)
 router.use('/schedule', scheduleRouter)
+router.use('/theater', theaterRouter)
 router.use(appRouter)
 
 

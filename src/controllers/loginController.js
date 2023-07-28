@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken')
 const fs = require('fs')
 require('dotenv').config()
 
-const user = require('../models/User')
 
 
 
@@ -18,7 +17,7 @@ const loginController = {
 
         const accessTokenExpired = '15m'
         const refreshTokenExpired = '7d'
-        const secrectKey = fs.readFileSync('././keys/private_key.pem')
+        const secrectKey = fs.readFileSync('src/key/private_key.pem')
 
         const username = req.body.username
         const password = req.body.password
@@ -37,7 +36,8 @@ const loginController = {
                     if (accessToken.length > 0 && refreshToken.length > 0) {
                         res.status(200).json({
                             accessToken: accessToken,
-                            refreshToken: refreshToken
+                            refreshToken: refreshToken,
+                            uid: item._id
                         })
                     } else {
                         res.status(500).json({ message: "system error" })
@@ -46,6 +46,27 @@ const loginController = {
             })
             res.status(403).json({ message: false })
         } else {
+            res.status(500).json({ message: "system error" })
+        }
+    },
+
+    refresh: async (req, res) => {
+        const accessTokenExpired = '15m'
+        const refreshToken = req.body.refreshToken
+        console.log(req.body)
+        const secrectKey = fs.readFileSync('src/key/private_key.pem')
+
+        try {
+            const checkValidRefreshToken = jwt.verify(refreshToken, secrectKey, { algorithm: 'RS256' })
+            if (checkValidRefreshToken) {
+                const newAccessToken = jwt.sign({ user: checkValidRefreshToken.user }, secrectKey, { expiresIn: accessTokenExpired, algorithm: 'RS256' })
+                res.status(200).json({
+                    accessToken: newAccessToken,
+                })
+            } else {
+                res.status(500).json({ message: "system error" })
+            }
+        } catch (error) {
             res.status(500).json({ message: "system error" })
         }
     }

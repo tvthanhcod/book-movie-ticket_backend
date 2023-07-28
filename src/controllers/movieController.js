@@ -2,12 +2,98 @@
 const movie = require('../models/Movie')
 
 const getAll = async (req, res) => {
+    const groupObject = {}
     const movies = await movie.findAll()
-    movies ? res.status(200).json(movies) : res.status(500).json("message: system error")
+    if (movies.length > 0) {
+        movies.forEach((movie) => {
+            const { _id, title, name_category,
+                duration, thumbnail, director, createAt,
+                show_date, theater_name,
+                start_time, end_time, price } = movie
+            if (!groupObject[_id]) {
+                groupObject[_id] = {
+                    _id,
+                    title,
+                    name_category,
+                    duration,
+                    thumbnail,
+                    director,
+                    createAt,
+                    data_detail: [{
+                        show_date,
+                        theater_name,
+                        start_time,
+                        end_time,
+                        price
+                    }]
+                }
+            } else {
+                groupObject[_id].data_detail = [...groupObject[_id].data_detail, {
+                    show_date,
+                    theater_name,
+                    start_time,
+                    end_time,
+                    price
+                }]
+            }
+        })
+    }
+
+    const resultData = Object.keys(groupObject).map(key => ({
+        ...groupObject[key]
+    }))
+
+    movies ? res.status(200).json(resultData) : res.status(500).json("message: system error")
+}
+
+const getOne = async (req, res) => {
+    const movieId = req.params.id
+    const groupObject = {}
+    const movies = await movie.findOne(movieId)
+    if (movies.length > 0) {
+        movies.forEach((movie) => {
+            const { _id, title, name_category,
+                duration, thumbnail, director, createAt,
+                show_date, theater_name,
+                start_time, end_time, price } = movie
+            if (!groupObject[_id]) {
+                groupObject[_id] = {
+                    _id,
+                    title,
+                    name_category,
+                    duration,
+                    thumbnail,
+                    director,
+                    createAt,
+                    data_detail: [{
+                        show_date,
+                        theater_name,
+                        start_time,
+                        end_time,
+                        price
+                    }]
+                }
+            } else {
+                groupObject[_id].data_detail = [...groupObject[_id].data_detail, {
+                    show_date,
+                    theater_name,
+                    start_time,
+                    end_time,
+                    price
+                }]
+            }
+        })
+    }
+
+    const resultData = groupObject[Object.keys(groupObject)[0]]
+    movies ? res.status(200).json(resultData) : res.status(500).json("message: system error")
 }
 
 const insertData = async (req, res) => {
     const movieName = req.body.title
+    const thumbnail = req.file.path
+    console.log(thumbnail)
+    req.body = { ...req.body, thumbnail: thumbnail }
     const checkSameName = await movie.ExistSameNameMovie(movieName)
     if (checkSameName) {
         res.status(409).json("movie alright exist")
@@ -39,6 +125,7 @@ const deleteAllMovie = async (req, res) => {
 
 module.exports = {
     getAll,
+    getOne,
     insertData,
     updateMovie,
     deleteOneMovie,

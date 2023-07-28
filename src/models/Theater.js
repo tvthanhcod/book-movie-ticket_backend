@@ -1,11 +1,30 @@
 
-const db = require('../config/database')
+const db = require('../../src/config/database')
 
 class Theater {
 
     static findAll() {
         return new Promise(resolve => {
             db.query("SELECT * FROM theaters", (err, theaters) => {
+                resolve(err ? err : theaters)
+            })
+        })
+    }
+
+    static findAreaAndCountTheater = () => {
+        return new Promise(resolve => {
+            db.query(`SELECT A._id, A.address, count(location) AS number_theater 
+            FROM theater_location A JOIN theaters B ON A._id = B.location
+            GROUP BY B.location`, (err, areas) => {
+                resolve(err ? err : areas)
+            })
+        })
+    }
+
+    static findTheaterByLocationId = (id) => {
+        return new Promise(resolve => {
+            db.query(`SELECT A._id, A.name 
+            FROM theaters A JOIN theater_location B ON A.location = B._id WHERE B._id = ${id}`, (err, theaters) => {
                 resolve(err ? err : theaters)
             })
         })

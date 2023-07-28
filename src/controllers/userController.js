@@ -10,6 +10,12 @@ class userController {
         users ? res.status(200).json(users) : res.status(500).json('message: system error')
     }
 
+    static async getUser(req, res) {
+        const userID = req.params.id
+        const userFind = await user.find(userID)
+        userFind ? res.status(200).json(userFind) : res.status(500).json('message: system error')
+    }
+
     static async addNew(req, res) {
         const salt = bcrypt.genSaltSync(Number(process.env.SALT))
         const hashPass = bcrypt.hashSync(req.body.password, salt)

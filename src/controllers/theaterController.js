@@ -5,6 +5,17 @@ const getAll = async (req, res) => {
     theaters ? res.status(200).json(theaters) : res.status(500).json({ message: false })
 }
 
+const getArea = async (req, res) => {
+    const areas = await theater.findAreaAndCountTheater()
+    areas ? res.status(200).json(areas) : res.status(500).json({ message: false })
+}
+
+const getAllTheater = async (req, res) => {
+    const id = req.params.id
+    const theaters = await theater.findTheaterByLocationId(id)
+    theaters ? res.status(200).json(theaters) : res.status(500).json({ message: false })
+}
+
 const insertData = async (req, res) => {
     const theaterName = req.body.name
     const checkSameName = theater.ExistSameNameTheater(theaterName)
@@ -37,6 +48,8 @@ const deleteAllTheater = async (req, res) => {
 
 module.exports = {
     getAll,
+    getArea,
+    getAllTheater,
     insertData,
     updateTheater,
     deleteOneTheater,

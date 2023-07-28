@@ -1,4 +1,4 @@
-const db = require('../config/database')
+const db = require('../../src/config/database')
 
 class Showtime {
     static findAll() {

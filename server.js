@@ -6,7 +6,7 @@ const cors = require('cors')
 
 const app = express()
 const morgan = require('morgan')
-const router = require('./routers')
+const router = require('./src/routes')
 require('dotenv').config()
 
 app.use(cors())

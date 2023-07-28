@@ -5,7 +5,8 @@ const router = express.Router()
 const loginController = require('../controllers/loginController')
 
 
-router.use('/login', loginController.login)
+router.post('/login', loginController.login)
+router.post('/refresh-token', loginController.refresh)
 
 
 module.exports = router
