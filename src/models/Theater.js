@@ -5,9 +5,21 @@ class Theater {
 
     static findAll() {
         return new Promise(resolve => {
-            db.query("SELECT * FROM theaters", (err, theaters) => {
-                resolve(err ? err : theaters)
-            })
+            db.query(`SELECT * FROM theaters`,
+                (err, theaters) => {
+                    resolve(err ? err : theaters)
+                })
+        })
+    }
+
+    static findOneById(id, date) {
+        return new Promise(resolve => {
+            db.query(`SELECT C.theater_id, C.name AS theater_name, C.location_id, C.show_date, D._id AS showtime_id, D.start_time, D.end_time, D.price, E._id AS movie_id, E.title, E.thumbnail
+        FROM(Select A._id AS theater_id, A.name, A.location AS location_id, B._id AS schedule_id, B.show_date, B.movie_id
+            FROM theaters A JOIN schedules B ON A._id = B.theater_id WHERE A._id = ${id} and B.show_date = '${date}') C JOIN showtimes D ON C.schedule_id = D.schedule_id JOIN movies E ON C.movie_id = E._id`,
+                (err, theaters) => {
+                    resolve(err ? err : theaters)
+                })
         })
     }
 

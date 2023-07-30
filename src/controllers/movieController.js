@@ -30,6 +30,7 @@ const getAll = async (req, res) => {
             } else {
                 groupObject[_id].data_detail = [...groupObject[_id].data_detail, {
                     show_date,
+
                     theater_name,
                     start_time,
                     end_time,

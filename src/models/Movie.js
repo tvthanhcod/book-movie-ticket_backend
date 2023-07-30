@@ -26,7 +26,6 @@ class Movie {
         })
     }
 
-
     static ExistSameNameMovie(movieName) {
         return new Promise(resolve => {
             db.query(`SELECT * FROM movies WHERE title = "${movieName}"`, (err, movies) => {
