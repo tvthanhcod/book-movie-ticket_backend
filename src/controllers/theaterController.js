@@ -1,4 +1,5 @@
 const theater = require('../models/Theater')
+const room = require('../models/Room')
 
 const getAll = async (req, res) => {
     const theaters = await theater.findAll()
@@ -15,7 +16,7 @@ const getTheaterById = async (req, res) => {
 
 
     dataTheater.map(theater => {
-        const { theater_id, theater_name, location_id, movie_id, title, thumbnail, showtime_id, show_date, start_time, end_time, price } = theater
+        const { theater_id, theater_name, location_id, movie_id, title, thumbnail, showtime_id, show_date, start_time, end_time, price, room_id } = theater
         dataResult['theater_id'] = theater_id
         dataResult['theater_name'] = theater_name
         dataResult['theater_location'] = location_id
@@ -23,7 +24,7 @@ const getTheaterById = async (req, res) => {
             groupShowDate[`${movie_id}-${show_date}`] = {
                 show_date,
                 data_detail: [
-                    { showtime_id, start_time, end_time, price }
+                    { showtime_id, room_id, start_time, end_time, price }
                 ]
             }
             groupMovie[movie_id] = {
@@ -37,7 +38,7 @@ const getTheaterById = async (req, res) => {
                 groupShowDate[`${movie_id}-${show_date}`] = {
                     show_date,
                     data_detail: [
-                        { showtime_id, start_time, end_time, price }
+                        { showtime_id, room_id, start_time, end_time, price }
                     ]
                 }
                 groupMovie[movie_id] = {
@@ -50,7 +51,7 @@ const getTheaterById = async (req, res) => {
             } else {
                 groupShowDate[`${movie_id}-${show_date}`] = {
                     show_date,
-                    data_detail: [...groupShowDate[`${movie_id}-${show_date}`].data_detail, { showtime_id, start_time, end_time, price }]
+                    data_detail: [...groupShowDate[`${movie_id}-${show_date}`].data_detail, { showtime_id, room_id, start_time, end_time, price }]
                 }
                 const updateDataGroupMovie = groupMovie[movie_id].data.map(item => {
                     const grmDate = new Date(item.show_date).getTime()
@@ -85,6 +86,39 @@ const getAllTheaterByLocation = async (req, res) => {
     const id = req.params.id
     const theaters = await theater.findTheaterByLocationId(id)
     theaters ? res.status(200).json(theaters) : res.status(500).json({ message: false })
+}
+
+// argument: theaterId, roomId
+const getSeat = async (req, res) => {
+    const rooms = await room.findByRoomAndTheater(req.query)
+    if (rooms.length > 0) {
+        const responseResult = {}
+        responseResult['theater_id'] = rooms[0].theater_id
+        responseResult['room_id'] = rooms[0].room_id
+        responseResult['seat_total'] = rooms[0].seat_total
+        responseResult['seats_booked'] = []
+        responseResult['seats_vip'] = []
+        responseResult['seats_couple'] = []
+        rooms.forEach(room => {
+            if (room.seat_status) {
+                responseResult['seats_booked'].push(room.seat_number)
+            } else {
+                switch (room.seat_typeId) {
+                    case 2:
+                        responseResult['seats_vip'].push(room.seat_number)
+                        break;
+                    case 3:
+                        responseResult['seats_couple'].push(room.seat_number)
+                        break;
+                    default:
+                        break;
+                }
+            }
+        })
+        res.status(200).json(responseResult)
+    } else {
+        res.status(500).json({ errorCode: 1, errorMessage: "Error From Server!" })
+    }
 }
 
 const insertData = async (req, res) => {
@@ -122,6 +156,7 @@ module.exports = {
     getTheaterById,
     getArea,
     getAllTheaterByLocation,
+    getSeat,
     insertData,
     updateTheater,
     deleteOneTheater,

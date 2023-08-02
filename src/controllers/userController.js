@@ -13,7 +13,7 @@ class userController {
     static async getUser(req, res) {
         const userID = req.params.id
         const userFind = await user.find(userID)
-        userFind ? res.status(200).json(userFind) : res.status(500).json('message: system error')
+        userFind.length > 0 ? res.status(200).json(userFind[0]) : res.status(500).json('message: system error')
     }
 
     static async addNew(req, res) {

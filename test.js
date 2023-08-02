@@ -1,16 +1,7 @@
-let canhHinhVuong = 5
-let structor = ""
+const db = require('./src/config/database')
 
-for (let i = 1; i <= canhHinhVuong; i++) {
-    for (let j = 1; j <= canhHinhVuong; j++) {
-        if (i == 1 || i == canhHinhVuong || j == 1 || j == canhHinhVuong) {
-            structor += "*"
-        } else {
-            structor += " "
-        }
-    }
-    structor += "\n"
+
+for (let i = 1; i <= 80; i++) {
+    db.query(`INSERT INTO seats (room_id, seat_number, seat_status, theater_id) VALUES ('1', ${i}, '0', '3');`)
 }
-
-console.log(structor)
 

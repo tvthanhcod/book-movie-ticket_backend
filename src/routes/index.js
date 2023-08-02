@@ -11,6 +11,7 @@ const theaterRouter = require('./theaterRoute')
 
 
 
+
 router.use('/admin', adminRouter)
 router.use('/user', userRouter)
 router.use('/movie', movieRouter)
