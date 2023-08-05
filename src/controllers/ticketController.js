@@ -1,4 +1,5 @@
 const ticket = require('../models/Ticket')
+const seat = require('../models/Seat')
 
 
 class ticketController {
@@ -8,8 +9,26 @@ class ticketController {
     }
 
     static async insertData(req, res) {
-        const statusInsert = ticket.insert(req.body)
-        statusInsert ? res.status(200).json("message: insert ticket success") : res.status(500).json("message: insert ticket fail")
+        const { account_id, room_id, theater_id, showtime_id, seats_booked } = req.body
+        const statusInsert = await ticket.insert({
+            account_id,
+            showtime_id,
+            seats_booked
+        })
+        if (statusInsert) {
+            seats_booked.map(async (itemSeat) => {
+                const statusUpdateSeat = await seat.updateStatusSeat({
+                    room_id: room_id,
+                    theater_id: theater_id,
+                    seatUpdate: Number(itemSeat),
+                    statusUpdate: 1
+                });
+                if (!statusUpdateSeat) {
+                    res.status(500).json({ errorCode: 2, message: "ERROR HANDLE IN DATABASE" })
+                }
+            })
+            res.status(200).json({ errorCode: 0, message: "INSERT TICKET SUCCESS" });
+        } else { res.status(500).json({ errorCode: 1, message: "ERROR FROM SERVER" }) }
     }
 
     static async updateticket(req, res) {

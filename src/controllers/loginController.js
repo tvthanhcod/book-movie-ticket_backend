@@ -37,7 +37,7 @@ const loginController = {
                         res.status(200).json({
                             accessToken: accessToken,
                             refreshToken: refreshToken,
-                            uid: item._id
+                            // uid: item._id
                         })
                     } else {
                         res.status(500).json({ message: "system error" })
@@ -53,7 +53,7 @@ const loginController = {
     refresh: async (req, res) => {
         const accessTokenExpired = '15m'
         const refreshToken = req.body.refreshToken
-        console.log(req.body)
+        // console.log(req.body)
         const secrectKey = fs.readFileSync('src/key/private_key.pem')
 
         try {

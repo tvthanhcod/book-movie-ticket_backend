@@ -1,5 +1,6 @@
 const theater = require('../models/Theater')
 const room = require('../models/Room')
+const seat = require('../models/Seat')
 
 const getAll = async (req, res) => {
     const theaters = await theater.findAll()
